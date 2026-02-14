@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You</title>
+    <style>
+        /* --- Шрифты --- */
+@import url('https://fonts.googleapis.com/css2?family=Jersey+25&family=Jost:ital,wght@0,100..900;1,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Podkova:wght@400..800&family=Press+Start+2P&display=swap');
+        /* --- Базовые настройки --- */
+        :root {
+            --dark-green: #050f05;
+            --moss-green: #1a2f1a;
+            --text-color: #cbbfa8;
+            /* Цвет старой бумаги */
+            --accent-color: #4a6b4a;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--dark-green);
+            font-family: 'Jost', serif;
+            color: var(--text-color);
+        }
+
+        /* --- Фон (Картинка + Эффекты) --- */
+        .background-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            /* Заглушка - мрачный лес. Можно заменить ссылку на свое фото */
+            background-image: url('background.png');
+            background-size: contain;
+            background-position: center;
+            filter: brightness(0.6) sepia(0.1) contrast(1.1) grayscale(0.2);
+            transition: transform 0.2s ease-out;
+        }
+
+        /* --- Гранж-шум (Noise Overlay) --- */
+        .noise-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.1;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* --- Туман --- */
+        .fog-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            z-index: 2;
+            pointer-events: none;
+            background: linear-gradient(to top, rgba(10, 20, 10, 0.9), transparent);
+        }
+
+        /* --- Canvas для частиц --- */
+        #particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+            /* Пропускаем клики сквозь канвас */
+        }
+
+        /* --- Контейнер контента --- */
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* --- Заголовок --- */
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #e0e0e0;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            letter-spacing: 2px;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        /* --- Кнопка --- */
+        .toggle-btn {
+            background: rgba(20, 30, 20, 0.6);
+            border: 1px solid var(--text-color);
+            color: var(--text-color);
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-family: 'Podkova', cursive;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: all 0.5s ease;
+            border-radius: 50px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            outline: none;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(40, 60, 40, 0.8);
+            box-shadow: 0 0 25px rgba(100, 150, 100, 0.3);
+            letter-spacing: 2px;
+        }
+
+        .toggle-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* --- Скрытый текст (Карточка) --- */
+        .message-card {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            width: 90%;
+            max-width: 1400px;
+            margin-top: 20px;
+            background: rgba(10, 15, 10, 0.7);
+            border: 1px solid rgba(100, 100, 100, 0.3);
+            border-radius: 4px;
+            /* Гранж стиль не любит сильных скруглений */
+            backdrop-filter: blur(10px);
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            transform: translateY(20px);
+            position: relative;
+        }
+
+        /* Декоративные уголки */
+        .message-card::before,
+        .message-card::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 1px solid var(--text-color);
+            opacity: 0.5;
+            transition: opacity 0.5s;
+        }
+
+        .message-card::before {
+            top: 5px;
+            left: 5px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .message-card::after {
+            bottom: 5px;
+            right: 5px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .message-card.visible {
+            max-height: 600px;
+            /* Достаточно места для текста */
+            opacity: 1;
+            transform: translateY(0);
+            padding: 40px 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .message-text {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            color: #dcdcdc;
+            text-shadow: 0 1px 3px black;
+            /*font-style: italic;*/
+        }
+
+        .signature {
+            margin-top: 20px;
+            font-size: 1rem;
+            opacity: 0.7;
+            display: block;
+            text-align: right;
+        }
+
+        /* --- Адаптивность --- */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .message-text {
+                font-size: 1.1rem;
+            }
+        }
+
+        
+    </style>
+</head>
+
+<body>
+
+    <div class="background-layer" id="bgLayer"></div>
+
+    <div class="noise-overlay"></div>
+
+    <canvas id="particles"></canvas>
+
+    <div class="fog-container"></div>
+
+    <div class="content-wrapper">
+        <h1 id="mainTitle">Любимай Дашульке</h1>
+
+        <button class="toggle-btn" id="toggleBtn" onclick="toggleMessage()">
+            Открыть
+        </button>
+
+        <div class="message-card" id="messageCard">
+            <p class="message-text">
+                Я очень дорожу нашими отношениями. Ты единственная девушка, которую я когда либо по настоящему любил, и, надеюсь, буду любить. 
+                Мне нравиться в тебе все - твое настырное, иногда стеснительное поведение, твоя добрая, местами наивная в хорошем смысле натура, твоя манера речи, 
+                твои глаза, улыбка, каждый сантиметр твоего тела... Вспоминая тебя в своем воображении на душе мне становиться тепло и уютно. Даша, ни прошло ни 
+                единого дня с нашей первой прогулки что бы я не подумал про тебя как только открыл глаза. Я хочу проводить в твоих обьятиях вечность, я хочу 
+                выслушивать твои длинные рассказы и истории о твоем детстве, пусть даже ты повторишь их в сотый раз по кругу, хочу видеть как ты смеешься с моих 
+                глупых шуток, хочу быть рядом. Рядом с тобой я счастлив, и я хочу что бы ты тоже была счастлива рядом со мной и чувствовала ко мне то, 
+                что я испытываю к тебе. Спасибо тебе за каждое хорошое воспоминание которые ты оставила в моей памяти, я ценю это. Я люблю тебя, Даша. 
+            </p>
+            <span class="signature">-- Рома --</span>
+        </div>
+    </div>
+
+    <script>
+        // --- Логика Кнопки ---
+        let isOpen = false;
+        const btn = document.getElementById('toggleBtn');
+        const card = document.getElementById('messageCard');
+        const title = document.getElementById('mainTitle');
+
+        function toggleMessage() {
+            isOpen = !isOpen;
+            if (isOpen) {
+                card.classList.add('visible');
+                btn.textContent = "Скрыть";
+                btn.style.borderColor = "#6b4a4a"; // Слегка красноватый при открытии
+            } else {
+                card.classList.remove('visible');
+                btn.textContent = "Открыть";
+                btn.style.borderColor = "#cbbfa8";
+            }
+        }
+
+        // --- Логика Частиц (Светлячки/Споры) ---
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+
+        // Настройка мыши
+        let mouse = { x: null, y: null, radius: 100 };
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+            // Параллакс эффект для фона
+            const bg = document.getElementById('bgLayer');
+            const xMove = (window.innerWidth - e.pageX * 2) / 90;
+            const yMove = (window.innerHeight - e.pageY * 2) / 90;
+            bg.style.transform = `translate(${xMove}px, ${yMove}px) scale(1.05)`;
+        });
+
+        // Касания для мобильных
+        window.addEventListener('touchmove', (e) => {
+            mouse.x = e.touches[0].clientX;
+            mouse.y = e.touches[0].clientY;
+        });
+
+        window.addEventListener('touchend', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 2 + 0.5; // Размер спор
+                this.baseX = this.x;
+                this.baseY = this.y;
+                this.density = (Math.random() * 30) + 1;
+                // Цвет частиц: слегка зеленовато-белый
+                this.color = `rgba(200, 230, 200, ${Math.random() * 0.5 + 0.2})`;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+            }
+
+            update() {
+                // Простое движение
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Взаимодействие с мышью (отталкивание)
+                if (mouse.x != null) {
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < mouse.radius) {
+                        const forceDirectionX = dx / distance;
+                        const forceDirectionY = dy / distance;
+                        const force = (mouse.radius - distance) / mouse.radius;
+                        const directionX = forceDirectionX * force * this.density;
+                        const directionY = forceDirectionY * force * this.density;
+
+                        this.x -= directionX;
+                        this.y -= directionY;
+                    }
+                }
+
+                // Возврат, если улетели за границы
+                if (this.x < 0 || this.x > width) this.speedX *= -1;
+                if (this.y < 0 || this.y > height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particles = [];
+            let numberOfParticles = (width * height) / 9000; // Плотность частиц
+            for (let i = 0; i < numberOfParticles; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+    </script>
+</body>
+
+</html>
