@@ -11,11 +11,11 @@
 
         /* --- Базовые настройки --- */
         :root {
-            --dark-green: #050f05;
-            --moss-green: #1a2f1a;
+            --dark-green: #05070f;
+            --moss-green: #1a212f;
             --text-color: #cbbfa8;
             /* Цвет старой бумаги */
-            --accent-color: #4a6b4a;
+            --accent-color: #4a4d6b;
         }
 
         body,
@@ -39,8 +39,8 @@
             height: 100%;
             z-index: 0;
             /* Заглушка - мрачный лес. Можно заменить ссылку на свое фото */
-            background-image: url('background.png');
-            background-size: contain;
+            background-image: url('faf843aa3f8879b17e1f2453ab52dae1.jpg');
+            background-size: cover;
             background-position: center;
             filter: brightness(0.6) sepia(0.1) contrast(1.1) grayscale(0.2);
             transition: transform 0.2s ease-out;
@@ -54,7 +54,7 @@
             width: 100%;
             height: 100%;
             z-index: 1;
-            opacity: 0.1;
+            opacity: 0.05;
             pointer-events: none;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
@@ -68,7 +68,7 @@
             height: 40%;
             z-index: 2;
             pointer-events: none;
-            background: linear-gradient(to top, rgba(10, 20, 10, 0.9), transparent);
+            background: linear-gradient(to top, rgba(0, 15, 43, 0.9), transparent);
         }
 
         /* --- Canvas для частиц --- */
@@ -110,7 +110,7 @@
 
         /* --- Кнопка --- */
         .toggle-btn {
-            background: rgba(20, 30, 20, 0.6);
+            background: rgba(20, 26, 30, 0.6);
             border: 1px solid var(--text-color);
             color: var(--text-color);
             padding: 15px 40px;
@@ -125,8 +125,8 @@
         }
 
         .toggle-btn:hover {
-            background: rgba(40, 60, 40, 0.8);
-            box-shadow: 0 0 25px rgba(100, 150, 100, 0.3);
+            background: rgba(42, 40, 60, 0.8);
+            box-shadow: 0 0 25px rgba(109, 100, 150, 0.3);
             letter-spacing: 2px;
         }
 
@@ -142,7 +142,7 @@
             width: 90%;
             max-width: 1400px;
             margin-top: 20px;
-            background: rgba(10, 15, 10, 0.7);
+            background: rgba(10, 12, 15, 0.7);
             border: 1px solid rgba(100, 100, 100, 0.3);
             border-radius: 4px;
             /* Гранж стиль не любит сильных скруглений */
@@ -238,19 +238,20 @@
 
         <div class="message-card" id="messageCard">
             <p class="message-text">
-                Я очень дорожу нашими отношениями. Ты единственная девушка, которую я когда либо по настоящему любил, и,
+                Я очень дорожу нашими отношениями. Ты - единственная девушка, которую я когда-либо по-настоящему любил,
+                и,
                 надеюсь, буду любить.
-                Мне нравиться в тебе все - твое настырное, иногда стеснительное поведение, твоя добрая, местами наивная
-                в хорошем смысле натура, твоя манера речи,
-                твои глаза, улыбка, каждый сантиметр твоего тела... Вспоминая тебя в своем воображении на душе мне
-                становиться тепло и уютно. Даша, ни прошло ни
+                Мне нравится в тебе все - твое настырное, иногда стеснительное поведение, твоя добрая, местами наивная
+                натура, твоя манера речи,
+                твои глаза, улыбка, каждый сантиметр твоего тела... Вспоминая тебя в своем воображении, на душе мне
+                становится тепло и уютно. Даша, ни прошло ни
                 единого дня с нашей первой прогулки что бы я не подумал про тебя как только открыл глаза. Я хочу
                 проводить в твоих обьятиях вечность, я хочу
                 выслушивать твои длинные рассказы и истории о твоем детстве, пусть даже ты повторишь их в сотый раз по
                 кругу, хочу видеть как ты смеешься с моих
                 глупых шуток, хочу быть рядом. Рядом с тобой я счастлив, и я хочу что бы ты тоже была счастлива рядом со
                 мной и чувствовала ко мне то,
-                что я испытываю к тебе. Спасибо тебе за каждое хорошое воспоминание которые ты оставила в моей памяти, я
+                что я испытываю к тебе. Спасибо тебе за каждое хорошее воспоминание, которое ты оставила в моей памяти, я
                 ценю это. Я люблю тебя, Даша.
             </p>
             <span class="signature">-- Рома --</span>
